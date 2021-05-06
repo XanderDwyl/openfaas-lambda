@@ -1,0 +1,47 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://localhost:8080
+
+functions:
+  s3:
+    lang: go
+    handler: ./aws/openfaas/s3
+    image: ${docker_name}/s3:latest
+    environment:
+      write_debug: true
+      AWS_ID: ''
+      AWS_KEY: ''
+      REGION: ''
+  sqs:
+    lang: go
+    handler: ./aws/openfaas/sqs
+    image: ${docker_name}/sqs:latest
+    environment:
+      write_debug: true
+      AWS_ID: ''
+      AWS_KEY: ''
+      REGION: ''
+  sns:
+    lang: go
+    handler: ./aws/openfaas/sns
+    image: ${docker_name}/sns:latest
+    environment:
+      write_debug: true
+      AWS_ID: ''
+      AWS_KEY: ''
+      REGION: ''
+  redis:
+    lang: go
+    handler: ./aws/openfaas/redis
+    image: ${docker_name}/redis:latest
+    environment:
+      write_debug: true
+      DB_URL: ''
+      AWS_ID: ''
+      AWS_KEY: ''
+      REGION: ''
+      SENTINEL_1: ''
+      SENTINEL_2: ''
+      SENTINEL_3: ''
+      SENTINEL_PASS: ''
