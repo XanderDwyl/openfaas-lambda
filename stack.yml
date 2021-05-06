@@ -6,7 +6,7 @@ provider:
 functions:
   s3:
     lang: go
-    handler: ./aws/openfaas/s3
+    handler: ./openfaas/aws/s3
     image: ${docker_name}/s3:latest
     environment:
       write_debug: true
@@ -15,7 +15,7 @@ functions:
       REGION: ''
   sqs:
     lang: go
-    handler: ./aws/openfaas/sqs
+    handler: ./openfaas/aws/sqs
     image: ${docker_name}/sqs:latest
     environment:
       write_debug: true
@@ -24,7 +24,7 @@ functions:
       REGION: ''
   sns:
     lang: go
-    handler: ./aws/openfaas/sns
+    handler: ./openfaas/aws/sns
     image: ${docker_name}/sns:latest
     environment:
       write_debug: true
@@ -33,7 +33,7 @@ functions:
       REGION: ''
   redis:
     lang: go
-    handler: ./aws/openfaas/redis
+    handler: ./openfaas/aws/redis
     image: ${docker_name}/redis:latest
     environment:
       write_debug: true

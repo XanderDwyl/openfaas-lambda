@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 
-	utility "github.com/XanderDwyl/openfaas-go-examples"
+	utility "github.com/XanderDwyl/openfaas-lambda/svc"
 )
 
 // Handle a serverless request
@@ -18,7 +18,7 @@ func Handle(req []byte) string {
 	creds := credentials.NewStaticCredentials(os.Getenv("AWS_ID"), os.Getenv("AWS_KEY"), "")
 	_, err := creds.Get()
 	if err != nil {
-		// handle error
+		return err.Error()
 	}
 
 	cfg := aws.NewConfig().WithRegion(os.Getenv("REGION")).WithCredentials(creds)
