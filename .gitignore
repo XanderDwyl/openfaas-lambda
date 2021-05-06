@@ -1,0 +1,8 @@
+template/*
+
+stack-deployment.yml
+
+template
+build
+openfaas/aws/*/vendor/*
+openfaas/gcp/*/vendor/*
