@@ -1,4 +1,4 @@
-module github.com/XanderDwyl/openfaas-go-examples
+module github.com/XanderDwyl/openfaas-go-examples/utility
 
 go 1.16
 
