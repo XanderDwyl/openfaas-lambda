@@ -13,6 +13,36 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
+// User base structure for CP user
+type User struct {
+	AccountID  string
+	UserID     string
+	AccountUID string
+	Groups     []int64
+}
+
+// Counts holds details about the uploaded file in S3
+// like total number of valid and invalid items.
+type Counts struct {
+	TotalPages       int
+	Total            int
+	ValidEntries     int
+	InvalidEntries   int
+	DuplicateEntries int
+}
+
+// Contacts is a contact slice/array
+type Contacts []*Contact
+
+// Contact is a simple model that holds a basic contact details like mobile
+// number, country, groups etc...
+type Contact struct {
+	PhoneNumber string
+	Country     string
+	Groups      []int64
+	Attributes  map[string]string
+}
+
 // S3Object base structure for the uploaded s3 object should extend
 // User.
 type S3Object struct {
