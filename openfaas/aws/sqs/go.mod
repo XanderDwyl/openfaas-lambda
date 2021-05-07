@@ -1,4 +1,4 @@
-module github.com/XanderDwyl/openfaas-lambda/openfaas/aws/s3
+module github.com/XanderDwyl/openfaas-lambda/openfaas/aws/sqs
 
 go 1.16
 
