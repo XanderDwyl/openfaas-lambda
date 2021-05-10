@@ -2,6 +2,7 @@ package svc
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"time"
 
@@ -24,4 +25,10 @@ func GetConfig() *aws.Config {
 
 	return aws.NewConfig().WithRegion(os.Getenv("REGION")).WithCredentials(creds)
 
+}
+
+func GetAPISecret(secretName string) (secretBytes []byte, err error) {
+	secretBytes, err = ioutil.ReadFile("/var/openfaas/secrets/" + secretName)
+
+	return secretBytes, err
 }
