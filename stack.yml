@@ -52,3 +52,9 @@ functions:
     environment:
       write_debug: true
       DB_URL: ''
+  env:
+    lang: go
+    handler: ./openfaas/aws/env
+    image: ${docker_name}/env:latest:latest
+    secrets:
+      - openfaas-env

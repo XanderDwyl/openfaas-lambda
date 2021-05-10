@@ -1,6 +1,6 @@
 # openfaas-lambda
 
-These are sets of example that i've used when migrating aws lambda to openfaas platform.
+These are sets of example that i've used when migrating aws lambda to openfaas platform. A part of documenting on how it works, I'm open for your contributions for the improvement and future reference in working projects related to openfaas.
 
 ## Pre-requisite
 
@@ -36,6 +36,10 @@ https://docs.openfaas.com/cli/install/
       SENTINEL_PASS: ''
   ...
   ```
+
+  Note: The OpenFaaS philosophy is that environment variables should be used for non-confidential configuration values only, and not used to inject secrets. I just add it here for quick and easy configuration during my testing but will get rid of this in production for sure.
+
+
 - Then deploy the functions with `faas-cli up -f stack.yml`
 
 ## TODO
