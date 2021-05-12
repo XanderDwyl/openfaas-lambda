@@ -7,14 +7,7 @@ import (
 	"gopkg.in/redis.v5"
 )
 
-func GetRedisConnection() (*redis.Client, error) {
-	// Default or staging credentials
-	sentinelAddrs := []string{
-		os.Getenv("SENTINEL_1"),
-		os.Getenv("SENTINEL_2"),
-		os.Getenv("SENTINEL_3"),
-	}
-
+func GetRedisConnection(sentinelAddrs []string) (*redis.Client, error) {
 	LogIt(fmt.Sprintf("Address: %v", sentinelAddrs))
 
 	// Connect to our sentinel servers
