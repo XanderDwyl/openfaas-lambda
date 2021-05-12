@@ -1,7 +1,12 @@
 package svc
 
 import (
+	"bytes"
+	"compress/gzip"
+	"compress/zlib"
+	"encoding/base64"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"time"
@@ -31,4 +36,34 @@ func GetAPISecret(secretName string) (secretBytes []byte, err error) {
 	secretBytes, err = ioutil.ReadFile("/var/openfaas/secrets/" + secretName)
 
 	return secretBytes, err
+}
+
+// DecompressBas64 decompresses base64 encoded and zlib compressed
+// data.
+func DecompressBas64(data []byte) (io.ReadCloser, error) {
+	d, err := base64.StdEncoding.DecodeString(string(data))
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := Decompress(d, "")
+	return body, err
+}
+
+// Decompress decompresses data from the given compression.
+// which defaults to zlib.
+func Decompress(data []byte, compression string) (io.ReadCloser, error) {
+	b := bytes.NewReader(data)
+	var r io.ReadCloser
+	var err error
+
+	switch compression {
+	case "gzip":
+		r, err = gzip.NewReader(b)
+	default:
+		r, err = zlib.NewReader(b)
+	}
+	_ = r.Close()
+
+	return r, err
 }

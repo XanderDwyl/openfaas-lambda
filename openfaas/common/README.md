@@ -1,6 +1,6 @@
 # Pit Project Examples
 
-- env | Small project to add confidential configuration in secrets instead of adding in environment variables.
+- env-secret | Small project to add confidential configuration in secrets instead of adding in environment variables.
 
   ```
     kubectl apply -f secret.yml

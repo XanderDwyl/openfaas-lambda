@@ -1,7 +1,6 @@
 package svc
 
 import (
-	"fmt"
 	"os"
 
 	"gopkg.in/redis.v5"
@@ -14,8 +13,6 @@ func GetRedisConnection() (*redis.Client, error) {
 		os.Getenv("SENTINEL_2"),
 		os.Getenv("SENTINEL_3"),
 	}
-
-	LogIt(fmt.Sprintf("Address: %v", sentinelAddrs))
 
 	// Connect to our sentinel servers
 	client := redis.NewFailoverClient(&redis.FailoverOptions{
