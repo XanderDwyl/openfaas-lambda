@@ -7,7 +7,6 @@ import (
 	"log"
 	"time"
 
-
 	"cloud.google.com/go/storage"
 	"golang.org/x/oauth2/google"
 )
@@ -55,7 +54,7 @@ func GCSGetFromKeyWithConfig(key string, bucket string, decompress bool) ([]byte
 }
 
 // GCSUpload ...
-func GCSUpload( item interface{}, ctype, bucket string, fileName string, compress bool) error {
+func GCSUpload(item interface{}, ctype, bucket string, fileName string, compress bool) error {
 	var data string
 
 	// Make sure to set GOOGLE_APPLICATION_CREDENTIALS env
@@ -105,7 +104,7 @@ func GCSUpload( item interface{}, ctype, bucket string, fileName string, compres
 	return err
 }
 
-func GetWithSignedUrl(sakeyFile, bucket, filename string, expiredInMin int) (url string, err error){
+func GetWithSignedUrl(sakeyFile, bucket, filename string, expiredInMin int) (url string, err error) {
 
 	saKey, err := ioutil.ReadFile(sakeyFile)
 	if err != nil {
