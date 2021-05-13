@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"compress/zlib"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -66,4 +67,28 @@ func Decompress(data []byte, compression string) (io.ReadCloser, error) {
 	_ = r.Close()
 
 	return r, err
+}
+
+
+// Base64Compress compresses the given data and returns a
+// base64 string representation of the compressed data.
+func Base64Compress(data interface{}) (string, error) {
+	d, err := json.Marshal(data)
+
+	if err != nil {
+		return "", err
+	}
+
+	var b bytes.Buffer
+	w := zlib.NewWriter(&b)
+	_, err = w.Write(d)
+	if err != nil {
+		return "", err
+	}
+	err = w.Close()
+	if err != nil {
+		return "", err
+	}
+
+	return base64.StdEncoding.EncodeToString(b.Bytes()), nil
 }

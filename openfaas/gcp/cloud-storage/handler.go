@@ -15,8 +15,13 @@ func Handle(req []byte) string {
 	if err != nil {
 		return err.Error()
 	}
-
+	
 	svc.LogIt(string(body))
+
+	
+	if svc.GCSUpload(item, os.Getenv("BUCKET_NAME"), os.Getenv("FILE_NAME"), compress); err != nil {
+		return err.Error()
+	}
 
 	return "CloudStorage"
 }
