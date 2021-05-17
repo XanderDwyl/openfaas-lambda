@@ -2,6 +2,8 @@ package function
 
 import (
 	"fmt"
+	"strconv"
+	"time"
 
 	"gopkg.in/redis.v5"
 
@@ -13,20 +15,50 @@ var redisc *redis.Client
 // Handle a serverless request
 func Handle(req []byte) string {
 
-	// // if you create secrets for you confidential ENV CONFIG
-	// sent1, err := svc.GetAPISecret("SENTINEL_1")
-	// sent2, err := svc.GetAPISecret("SENTINEL_2")
-	// sent3, err := svc.GetAPISecret("SENTINEL_3")
-
-	// os.Setenv("SENTINEL_1", sent1)
-	// os.Setenv("SENTINEL_2", sent2)
-	// os.Setenv("SENTINEL_3", sent3)
-
 	redisc, err := svc.GetRedisConnection()
 	if err != nil {
 		return fmt.Sprintf("Redis Connection Error: %v", err.Error())
 	}
 
-	return fmt.Sprintf("connecting to redis : %v", redisc)
+	idRedisKey, _ := strconv.Atoi(string(req))
+	if isRedisSetAlready(redisc, idRedisKey) {
+		msg := "Redis key is set"
+		svc.LogIt(msg)
 
+		keys, err := redisc.Get(string(req)).Result()
+		svc.LogIt(fmt.Sprintf("Keys => %v | %v", keys, err))
+		return "REDIS is already set"
+	}
+
+	// Otherwise, we set it
+	err = redisSetCampaign(redisc, idRedisKey)
+	if err != nil {
+		svc.LogIt(
+			fmt.Sprintf(
+				"Setting redis with key error : %s",
+				err.Error(),
+			),
+		)
+		return "Could not set redis with key"
+	}
+
+	return "DONE"
+}
+
+func isRedisSetAlready(redisc *redis.Client, cid int) bool {
+	key := strconv.Itoa(cid)
+	val := redisc.Get(key).Val()
+
+	svc.LogIt(fmt.Sprintf("Redis Value: %v", val))
+
+	return val == key
+}
+
+func redisSetCampaign(redisc *redis.Client, cid int) error {
+	key := strconv.Itoa(cid)
+
+	// Set expiration to 2 hours
+	rediscErr := redisc.Set(key, key, 2*time.Hour).Err()
+
+	return rediscErr
 }
