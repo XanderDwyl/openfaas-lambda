@@ -16,6 +16,11 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 )
 
+func LogItKibana(funcName, level, message string) {
+	// ${longdate}|${function name}|${uppercase:${level}}| ${message}
+	LogIt(fmt.Sprintf("%s - %s - %s", funcName, level, message))
+}
+
 func LogIt(message string) {
 	logMessage := fmt.Sprintf("%s - %s", time.Now().Format(time.RFC3339), message)
 	fmt.Fprintln(os.Stderr, logMessage)
@@ -68,7 +73,6 @@ func Decompress(data []byte, compression string) (io.ReadCloser, error) {
 
 	return r, err
 }
-
 
 // Base64Compress compresses the given data and returns a
 // base64 string representation of the compressed data.
