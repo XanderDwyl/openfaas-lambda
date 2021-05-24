@@ -37,20 +37,20 @@ func GetDBConnection(title string) (db *sql.DB, err error) {
 
 		db, err = sql.Open("sqlserver", dbu)
 		if err != nil {
-			LogIt(fmt.Sprintf("Connection Error: %v", err))
+			LogItKibana(os.Getenv("FNAME"), "ERROR", fmt.Sprintf("Connection Error: %v", err))
 			break
 		}
 
 		err = db.Ping()
 		if err == nil {
 			workingDBURL = dbu
-			LogIt(fmt.Sprintf("[ %s ] DB Connected", title))
+			LogItKibana(os.Getenv("FNAME"), "ERROR", fmt.Sprintf("[ %s ] DB Connected", title))
 			break
 		}
 
 		// Set to empty if we can no longer connect to it
 		workingDBURL = ""
-		LogIt(fmt.Sprintf(
+		LogItKibana(os.Getenv("FNAME"), "ERROR",fmt.Sprintf(
 			"[ %v ] %s: Could not connect to the database [ %s ], retrying... %d",
 			err,
 			title,
@@ -69,7 +69,7 @@ func GetDBConnection(title string) (db *sql.DB, err error) {
 				t,
 			)
 			err = errors.New(errStr)
-			LogIt(err.Error())
+			LogItKibana(os.Getenv("FNAME"), "ERROR", err.Error())
 			break
 		}
 	}

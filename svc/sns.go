@@ -1,9 +1,10 @@
 package svc
 
 import (
-	"os"
-	"fmt"
 	"encoding/json"
+	"fmt"
+	"os"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sns"
@@ -27,10 +28,6 @@ type SNSPayload struct {
 func GetSNSPayload(req []byte) (event *SNSPayload) {
 	err := json.Unmarshal(req, &event)
 	if err != nil {
-		LogIt(fmt.Sprintf(
-			"Event error: %v",
-			err.Error(),
-		))
 		return nil
 	}
 
@@ -40,14 +37,19 @@ func GetSNSPayload(req []byte) (event *SNSPayload) {
 func SNSMessage(message []byte) error {
 	topicArn := os.Getenv("SNS_TOPIC")
 
-	cfg := GetConfig()
-	snsSVC := sns.New(session.New(), cfg)
+	snsSes, err := session.NewSession(GetConfig())
+	if err != nil {
+		return err
+	}
+
+	snsSVC := sns.New(snsSes)
 
 	input := &sns.PublishInput{
 		Message:  aws.String(string(message)),
 		TopicArn: aws.String(topicArn),
 	}
+	
+	_, err = snsSVC.Publish(input)
 
-	_, err := snsSVC.Publish(input)
 	return err
 }

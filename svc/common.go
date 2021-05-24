@@ -10,7 +10,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -22,15 +21,14 @@ func LogItKibana(funcName, level, message string) {
 }
 
 func LogIt(message string) {
-	logMessage := fmt.Sprintf("%s - %s", time.Now().Format(time.RFC3339), message)
-	fmt.Fprintln(os.Stderr, logMessage)
+	fmt.Fprintln(os.Stderr, message)
 }
 
 func GetConfig() *aws.Config {
 	creds := credentials.NewStaticCredentials(os.Getenv("AWS_ID"), os.Getenv("AWS_KEY"), "")
 	_, err := creds.Get()
 	if err != nil {
-		fmt.Printf("Error: %v", err.Error())
+		LogItKibana(os.Getenv("FNAME"), "ERROR", err.Error())
 		return nil
 	}
 
