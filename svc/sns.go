@@ -2,7 +2,6 @@ package svc
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -48,7 +47,7 @@ func SNSMessage(message []byte) error {
 		Message:  aws.String(string(message)),
 		TopicArn: aws.String(topicArn),
 	}
-	
+
 	_, err = snsSVC.Publish(input)
 
 	return err
