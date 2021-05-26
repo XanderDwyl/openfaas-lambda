@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -16,19 +17,48 @@ import (
 )
 
 func LogItKibana(funcName, level, message string) {
-	// ${longdate}|${function name}|${uppercase:${level}}| ${message}
-	LogIt(fmt.Sprintf("%s - %s - %s", funcName, level, message))
+	LogIt(fmt.Sprintf("%s %s %s", funcName, level, message))
+}
+
+func LogInfo(message string) {
+	LogIt(fmt.Sprintf("%s INFO %s", os.Getenv("HOSTNAME"), message))
+}
+
+func LogWarn(message string) {
+	LogIt(fmt.Sprintf("%s WARN %s", os.Getenv("HOSTNAME"), message))
+}
+
+func LogErr(message string) {
+	LogIt(fmt.Sprintf("%s ERROR %s", os.Getenv("HOSTNAME"), message))
 }
 
 func LogIt(message string) {
-	fmt.Fprintln(os.Stderr, message)
+	var (
+		buf    bytes.Buffer
+		logger = log.New(&buf, "", log.LstdFlags)
+	)
+
+	logger.Print(message)
+
+	fmt.Print(&buf)
+}
+
+func GetLogString(message string) string {
+	var (
+		buf    bytes.Buffer
+		logger = log.New(&buf, "", log.LstdFlags)
+	)
+
+	logger.Print(message)
+
+	return fmt.Sprintf("%s", &buf)
 }
 
 func GetConfig() *aws.Config {
 	creds := credentials.NewStaticCredentials(os.Getenv("AWS_ID"), os.Getenv("AWS_KEY"), "")
 	_, err := creds.Get()
 	if err != nil {
-		LogItKibana(os.Getenv("FNAME"), "ERROR", err.Error())
+		LogItKibana(os.Getenv("HOSTNAME"), "ERROR", err.Error())
 		return nil
 	}
 

@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -18,7 +17,6 @@ func GCSGetFromKeyWithConfig(key string, bucket string, decompress bool) ([]byte
 	ctx := context.Background()
 	storageClient, err := storage.NewClient(ctx)
 	if err != nil {
-		log.Fatalf("Failed to create client : %v", err)
 		return nil, err
 	}
 
@@ -61,13 +59,11 @@ func GCSUpload(item interface{}, ctype, bucket string, fileName string, compress
 	ctx := context.Background()
 	storageClient, err := storage.NewClient(ctx)
 	if err != nil {
-		log.Fatalf("Failed to create client : %v", err)
 		return err
 	}
 
 	b := storageClient.Bucket(bucket)
 	if _, err := b.Attrs(ctx); err == storage.ErrBucketNotExist {
-		LogIt("The bucket does not exist")
 		return err
 	}
 
@@ -78,7 +74,6 @@ func GCSUpload(item interface{}, ctype, bucket string, fileName string, compress
 	if compress {
 		data, err = Base64Compress(item)
 		if err != nil {
-			LogIt("Error in Base64Compress")
 			return err
 		}
 	} else {
@@ -86,18 +81,18 @@ func GCSUpload(item interface{}, ctype, bucket string, fileName string, compress
 
 		b, err = json.Marshal(item)
 		if err != nil {
-			LogIt("Error in JSON Marshal")
 			return err
 		}
 
 		data = string(b)
-		ctype = "application/json"
+		if ctype == "text/plain" {
+			ctype = "application/json"
+		}
 	}
 
 	wc.ContentType = ctype
 	wc.RetentionExpirationTime = time.Now().Add(time.Second * 60) // 1-minute
 	if _, err := wc.Write([]byte(data)); err != nil {
-		LogIt("Error writing content in bucket")
 		return err
 	}
 
@@ -105,8 +100,7 @@ func GCSUpload(item interface{}, ctype, bucket string, fileName string, compress
 }
 
 // GCSUpload ...
-func GCSUploadPublicRead(item interface{}, ctype, bucket string, fileName string, daysExpired int) error {
-	var data string
+func GCSUploadPublicRead(data []byte, ctype, bucket string, fileName string, daysExpired int) error {
 
 	// Make sure to set GOOGLE_APPLICATION_CREDENTIALS env
 	ctx := context.Background()
@@ -124,17 +118,10 @@ func GCSUploadPublicRead(item interface{}, ctype, bucket string, fileName string
 
 	defer wc.Close()
 
-	df, err := json.Marshal(item)
-	if err != nil {
-		return err
-	}
-
-	data = string(df)
-
 	wc.ContentType = ctype
 	wc.PredefinedACL = "publicRead"
 	wc.RetentionExpirationTime = time.Now().AddDate(0, 0, daysExpired)
-	if _, err := wc.Write([]byte(data)); err != nil {
+	if _, err := wc.Write(data); err != nil {
 		return err
 	}
 
