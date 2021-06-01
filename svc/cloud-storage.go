@@ -115,13 +115,14 @@ func GCSUploadPublicRead(data []byte, ctype, bucket string, fileName string, day
 	}
 
 	wc := b.Object(fileName).NewWriter(ctx)
-
-	defer wc.Close()
-
 	wc.ContentType = ctype
-	wc.PredefinedACL = "publicRead"
 	wc.RetentionExpirationTime = time.Now().AddDate(0, 0, daysExpired)
-	if _, err := wc.Write(data); err != nil {
+	
+	if  _, err := wc.Write(data); err != nil {
+		return err
+	}
+	
+	if err := wc.Close(); err != nil {
 		return err
 	}
 
