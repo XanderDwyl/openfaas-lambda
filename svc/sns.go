@@ -1,8 +1,9 @@
 package svc
 
 import (
-	"os"
 	"encoding/json"
+	"os"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sns"
@@ -23,6 +24,12 @@ type SNSPayload struct {
 	UnsubscribeURL   string `json:"UnsubscribeURL"`
 }
 
+type AttributesKey struct {
+	Name        string
+	DataType    string
+	StringValue string
+}
+
 func GetSNSPayload(req []byte) (event *SNSPayload) {
 	err := json.Unmarshal(req, &event)
 	if err != nil {
@@ -32,15 +39,30 @@ func GetSNSPayload(req []byte) (event *SNSPayload) {
 	return event
 }
 
-func SNSMessage(message []byte) error {
+func SNSMessage(message []byte, messageAttributes *AttributesKey) error {
 	topicArn := os.Getenv("SNS_TOPIC")
 
 	cfg := GetConfig()
-	snsSVC := sns.New(session.New(), cfg)
+	sess, _ := session.NewSession(cfg)
+	snsSVC := sns.New(sess)
 
 	input := &sns.PublishInput{
 		Message:  aws.String(string(message)),
 		TopicArn: aws.String(topicArn),
+	}
+
+	if messageAttributes.DataType != "" && messageAttributes.StringValue != "" {
+		key := messageAttributes.Name
+		input = &sns.PublishInput{
+			Message:  aws.String(string(message)),
+			TopicArn: aws.String(topicArn),
+			MessageAttributes: map[string]*sns.MessageAttributeValue{
+				key: { 
+					DataType:    aws.String(messageAttributes.DataType),
+					StringValue: aws.String(messageAttributes.StringValue),
+				},
+			},
+		}
 	}
 
 	_, err := snsSVC.Publish(input)
