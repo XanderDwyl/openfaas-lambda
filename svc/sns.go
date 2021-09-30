@@ -28,6 +28,7 @@ type AttributesKey struct {
 	Name        string
 	DataType    string
 	StringValue string
+	AWSCred     bool `json: "AWSCred" default: "false"`
 }
 
 func GetSNSPayload(req []byte) (event *SNSPayload) {
@@ -39,11 +40,17 @@ func GetSNSPayload(req []byte) (event *SNSPayload) {
 	return event
 }
 
-func SNSMessage(message []byte, messageAttributes *AttributesKey) error {
+func SNSMessage(message []byte, msgAttrKey *AttributesKey) error {
 	topicArn := os.Getenv("SNS_TOPIC")
 
-	cfg := GetConfig()
-	sess, _ := session.NewSession(cfg)
+	sess, _ := session.NewSession()
+	if msgAttrKey.AWSCred {
+		sess, _ = session.NewSession(&aws.Config{})
+	} else {
+		cfg := GetConfig()
+		sess, _ = session.NewSession(cfg)
+	}
+
 	snsSVC := sns.New(sess)
 
 	input := &sns.PublishInput{
@@ -51,15 +58,15 @@ func SNSMessage(message []byte, messageAttributes *AttributesKey) error {
 		TopicArn: aws.String(topicArn),
 	}
 
-	if messageAttributes.DataType != "" && messageAttributes.StringValue != "" {
-		key := messageAttributes.Name
+	if msgAttrKey.DataType != "" && msgAttrKey.StringValue != "" {
+		key := msgAttrKey.Name
 		input = &sns.PublishInput{
 			Message:  aws.String(string(message)),
 			TopicArn: aws.String(topicArn),
 			MessageAttributes: map[string]*sns.MessageAttributeValue{
-				key: { 
-					DataType:    aws.String(messageAttributes.DataType),
-					StringValue: aws.String(messageAttributes.StringValue),
+				key: {
+					DataType:    aws.String(msgAttrKey.DataType),
+					StringValue: aws.String(msgAttrKey.StringValue),
 				},
 			},
 		}
