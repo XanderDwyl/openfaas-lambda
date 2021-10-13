@@ -28,7 +28,7 @@ type AttributesKey struct {
 	Name        string
 	DataType    string
 	StringValue string
-	AWSCred     bool `json: "AWSCred" default: "false"`
+	AWSCred     bool `json:"AWSCred" default:"false"`
 }
 
 func GetSNSPayload(req []byte) (event *SNSPayload) {

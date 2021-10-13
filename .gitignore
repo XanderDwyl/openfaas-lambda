@@ -5,3 +5,5 @@ stack-deployment.yml
 template
 build
 openfaas/*/*/vendor/*
+vendor
+svc/vendor
