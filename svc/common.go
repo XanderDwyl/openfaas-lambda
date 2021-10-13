@@ -54,6 +54,7 @@ func GetLogString(message string) string {
 	return fmt.Sprintf("%s", &buf)
 }
 
+// GetConfig ...
 func GetConfig() *aws.Config {
 	creds := credentials.NewStaticCredentials(os.Getenv("AWS_ID"), os.Getenv("AWS_KEY"), "")
 	_, err := creds.Get()
@@ -72,8 +73,7 @@ func GetAPISecret(secretName string) (secretBytes []byte, err error) {
 	return secretBytes, err
 }
 
-// DecompressBas64 decompresses base64 encoded and zlib compressed
-// data.
+// DecompressBas64 decompresses base64 encoded and zlib compressed data.
 func DecompressBas64(data []byte) (io.ReadCloser, error) {
 	d, err := base64.StdEncoding.DecodeString(string(data))
 	if err != nil {

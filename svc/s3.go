@@ -20,6 +20,10 @@ func S3GetFromKeyWithConfig(key string, bucket string, s3CFG *s3.S3, decompress 
 	}
 
 	body, err := ioutil.ReadAll(item.Body)
+	if err != nil {
+		return nil, err
+	}
+
 	if decompress {
 		rc, err := DecompressBas64(body)
 		if err != nil {
