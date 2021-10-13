@@ -43,7 +43,7 @@ func GetSNSPayload(req []byte) (event *SNSPayload) {
 func SNSMessage(message []byte, msgAttrKey *AttributesKey) error {
 	topicArn := os.Getenv("SNS_TOPIC")
 
-	sess, _ := session.NewSession()
+	var sess *session.Session
 	if msgAttrKey.AWSCred {
 		sess, _ = session.NewSession(&aws.Config{})
 	} else {
